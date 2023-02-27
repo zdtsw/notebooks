@@ -7,27 +7,31 @@ on:
    - cron: "0 13 * * 6"
 
 env:
-  UPSTREAM_URL: "https://github.com/opendatahub-io/notebooks.git"
+  # UPSTREAM_URL: "https://github.com/opendatahub-io/notebooks.git"
+  UPSTREAM_REPO: "opendatahub-io/notebooks"
   UPSTREAM_BRANCH: "2023a"
   DOWNSTREAM_BRANCH: "2023a"
 
 jobs:
-
-  build:
+  sync_latest_from_upstream:
     runs-on: ubuntu-latest
-    permissions:
-      # Give the default GITHUB_TOKEN write permission to commit and push the
-      # added or changed files to the repository.
-      contents: write
+    name: sync release branch {{ env.UPSTREAM_BRANCH }}
     steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ env.DOWNSTREAM_BRANCH }}
 
-      - name: Sync release branches (Upstream to Downstream)
-        run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "GitHub Actions"
-          git remote add upstream ${{ env.UPSTREAM_URL }}
-          git fetch upstream
-          git checkout ${{ env.UPSTREAM_BRANCH }}
-          git merge upstream/${{ env.DOWNSTREAM_BRANCH }} -no-edit -m "Merged ${{ env.UPSTREAM_BRANCH }} branch on $(date +%F)"
-          git push origin ${{ env.DOWNSTREAM_BRANCH }}
+    - name: Sync upstream changes
+      id: sync
+      uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
+      with:
+        target_sync_branch: ${{ env.DOWNSTREAM_BRANCH }}
+        target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+        upstream_sync_branch: ${{ env.UPSTREAM_BRANCH }}
+        upstream_sync_repo: ${{ env.UPSTREAM_REPO }}
+      
+    - name: New commits found
+      if: steps.sync.outputs.has_new_commits == 'true'
+      run: echo "New commits were found to sync."
 
