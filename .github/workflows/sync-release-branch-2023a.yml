@@ -10,7 +10,7 @@ env:
   # UPSTREAM_URL: "https://github.com/opendatahub-io/notebooks.git"
   UPSTREAM_REPO: "opendatahub-io/notebooks"
   UPSTREAM_BRANCH: "2023a"
-  DOWNSTREAM_BRANCH: "2023a"
+  DOWNSTREAM_BRANCH: "release-2023a"
 
 jobs:
   sync_latest_from_upstream:
