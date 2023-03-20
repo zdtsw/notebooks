@@ -15,7 +15,7 @@ env:
 jobs:
   sync_latest_from_upstream:
     runs-on: ubuntu-latest
-    name: sync release branch {{ env.UPSTREAM_BRANCH }}
+    name: sync release branch ${{ env.UPSTREAM_BRANCH }}
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
