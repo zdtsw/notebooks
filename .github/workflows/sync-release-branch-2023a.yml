@@ -21,13 +21,13 @@ jobs:
     # Bug in GitHub Action does not support env variable in name
     name: sync release branch from 2023a to release-2023a
     steps:
+    - name: Print manual trigger reason
+      if: github.event.inputs.reason != ''
+      run: echo "Reason ${{ inputs.reason }} "
     - name: Checkout repo
       uses: actions/checkout@v3
       with:
         ref: ${{ env.DOWNSTREAM_BRANCH }}
-    - name: Print manual trigger reason
-      if: github.event.inputs.reason != ''
-      run: echo "Reason ${{ inputs.reason }} "
     - name: Sync upstream changes
       id: sync
       uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
