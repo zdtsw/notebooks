@@ -2,9 +2,14 @@
 
 name: Sync downstream release branch with upstream's
 on:
- # Triggers the workflow every Tue at 8 A.M
- schedule:
-   - cron: "0 8 * * 2"
+  # Triggers the workflow every Tue at 8 A.M
+  schedule:
+  - cron: "0 8 * * 2"
+  workflow_dispatch:
+    inputs:
+      reason: # state reason why this need to be run by human
+        required: true
+        description: "Reason for running this workflow"
 env:
   # UPSTREAM_URL: "https://github.com/opendatahub-io/notebooks.git"
   UPSTREAM_REPO: "opendatahub-io/notebooks"
@@ -20,7 +25,9 @@ jobs:
       uses: actions/checkout@v3
       with:
         ref: ${{ env.DOWNSTREAM_BRANCH }}
-
+    - name: Print manual trigger reason
+      if: github.event.inputs.reason != ''
+      run: echo "Reason ${{ inputs.reason }} "
     - name: Sync upstream changes
       id: sync
       uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
